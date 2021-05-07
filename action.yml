@@ -1,0 +1,67 @@
+---
+#
+
+name: "Validation"
+description: "Validate XML files with daps for SUSE documentation"
+author: "@tomschr"
+inputs:
+  
+  container:
+    description: "The container to use"
+    required: true
+    default: "susedoc/ci:latest"
+
+  notification-email:
+    description: "Email used for notification"
+    required: false
+    default: "doc-team@suse.com"
+
+  
+
+# outputs:
+#  # 
+
+# runs:
+#   using: "composite"
+#   steps:
+
+#   - name: Install packages
+#     shell: bash
+#     run: |
+#       sudo apt-get install -y docbook5-xml docbook-xsl-ns imagemagick libxslt1.1 make poppler-utils sgml-base sgml-data libxml2 libxml-commons-external-java libxmlgraphics-commons-java libimage-exiftool-perl fop jing w3m xsltproc xmlstarlet
+
+#   - name: Checkout daps repo
+#     uses: actions/checkout@v2
+#     with:
+#       repository: opensuse/daps
+#       path: daps
+
+# runs:
+#   using: docker
+#   image: ${{ inputs.container }}
+#   args:
+#     - ""
+
+runs:
+   using: "composite"
+   steps:
+    - name: Saving the GitHub context as JSON
+      id: gh-context
+      shell: bash
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: |
+        FILE="/tmp/github-context.json"
+        echo $GITHUB_CONTEXT > $FILE
+        echo "::set-output name=contextfile::$FILE"
+
+    - name: Run docker
+      shell: bash
+      run: |
+        docker run --rm -it \
+          --volume ${PWD}:/usr/src/app \
+          --workdir /usr/src/app \
+           ${{ inputs.container }} \
+          /bin/bash -c '/bin/bash ${{ github.action_path }}/travis.sh'
+      
+
