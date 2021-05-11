@@ -1,0 +1,33 @@
+---
+name: Test
+
+on:
+  push:
+
+jobs:
+  test:
+    # Use only branches, but skip tags
+    if: startsWith(github.ref, 'refs/heads/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: List some important versions
+        run: |
+          bash --version
+          echo "curl version..."
+          curl --version || true
+          echo "wget version..."
+          wget --version || true
+          echo "jq --version..."
+          jq --version || true
+
+      - uses: actions/checkout@v2
+
+      - name: Run Docker container
+        id: mydocker
+        uses: ./
+        # with:
+
+      - name: After Docker
+        run: |
+          echo "Exit code from docker: ${{ steps.mydocker.outputs.dapsexitcode }}"
