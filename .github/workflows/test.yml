@@ -29,5 +29,6 @@ jobs:
         # with:
 
       - name: After Docker
+        if: always()
         run: |
           echo "Exit code from docker: ${{ steps.mydocker.outputs.dapsexitcode }}"
