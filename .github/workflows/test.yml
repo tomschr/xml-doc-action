@@ -32,3 +32,5 @@ jobs:
         if: always()
         run: |
           echo "Exit code from docker: ${{ steps.mydocker.outputs.dapsexitcode }}"
+          echo "Log file in ${{ steps.mydocker.outputs.logfile }}"
+          cat "${{ steps.mydocker.outputs.logfile }}"
